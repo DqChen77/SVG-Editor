@@ -13,42 +13,12 @@
 | 入口 | `src/cli.ts` | Node readline REPL，提供 `svg>` 提示符，不承载模型或业务规则。 |
 | 测试 | `test/` | 通过 `Editor.dispatch` 覆盖命令、Composite、历史、失败原子性和 SVG round-trip。 |
 
-```plantuml
-@startuml
-package cli {
-  [cli.ts]
-}
-package core {
-  [Editor]
-  [Tokenizer]
-}
-package commands {
-  [Command objects]
-  [History]
-}
-package model {
-  [SvgDocument]
-  [Shape hierarchy]
-  [ShapeFactory]
-}
-package io {
-  [SvgParser]
-  [SvgSerializer]
-}
-cli.ts --> Editor
-Editor --> Tokenizer
-Editor --> "Command objects"
-Editor --> History
-Editor --> SvgParser
-Editor --> SvgSerializer
-"Command objects" --> SvgDocument
-History --> Editor
-SvgParser --> ShapeFactory
-SvgParser --> SvgDocument
-SvgSerializer --> SvgDocument
-SvgDocument --> "Shape hierarchy"
-@enduml
-```
+![SVG CLI architecture class diagram](architecture.svg)
+
+The editable PlantUML source is [architecture.puml](architecture.puml).
+The diagram expands `CreateCommand`, `GroupCommand`, `Group`, and `Rect` as
+representatives; the other concrete commands and shapes follow the same
+inheritance paths.
 
 ### 设计模式的选择
 
@@ -84,6 +54,7 @@ SvgDocument --> "Shape hierarchy"
 4. 首次 CLI 回放发现 `create circle` 的可选颜色索引不能复用矩形逻辑，修正为按类型定义必需参数数目；同时将 g 的移动反馈改为增量摘要。
 5. 首次 round-trip 测试发现 malformed XML 会被 XML 库写到 stderr，改用 `onError` 收集解析错误，使 CLI 统一返回 `error: cannot read file: ...`。
 6. `box` 的完整语义在说明中属于后续插件阶段，因此明确测试其在 Phase 1 返回 `unknown shape type`，没有提前把插件实现混入内核。
+7. 原来的 PlantUML fenced code block 在普通 Markdown 预览中不渲染；改为独立 `.puml` 源文件和已生成的 SVG，并在本文件直接嵌入 SVG。
 
 ## 一致性自查
 

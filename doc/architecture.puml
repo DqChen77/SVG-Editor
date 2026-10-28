@@ -1,0 +1,55 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package core {
+  class Editor {
+    +dispatch(line: string): string
+    +replaceDocument(document: SvgDocument): void
+  }
+}
+
+package commands {
+  interface Command {
+    +execute(editor: Editor): string
+    +undo(editor: Editor): void
+    +redo(editor: Editor): string
+  }
+  abstract class SnapshotCommand
+  class History
+  class CreateCommand
+  class GroupCommand
+}
+
+package model {
+  class SvgDocument
+  abstract class Shape
+  class Group
+  class Rect
+  class ShapeFactory
+}
+
+package io {
+  class SvgParser
+  class SvgSerializer
+}
+
+Editor --> Command : dispatches
+Editor --> History
+Editor --> SvgParser
+Editor --> SvgSerializer
+SnapshotCommand ..|> Command
+History --> Command
+CreateCommand --|> SnapshotCommand
+GroupCommand --|> SnapshotCommand
+SnapshotCommand --> SvgDocument
+Shape <|-- Group
+Shape <|-- Rect
+SvgDocument *-- Shape
+Group *-- Shape : children
+ShapeFactory ..> Shape
+SvgParser --> ShapeFactory
+SvgParser --> SvgDocument
+SvgSerializer --> SvgDocument
+
+@enduml
