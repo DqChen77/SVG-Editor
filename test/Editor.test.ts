@@ -48,7 +48,7 @@ test('group, ungroup, and z-order preserve child order', () => {
   editor.dispatch('create rect a 0 0 1 1 in outer');
   editor.dispatch('create rect b 0 0 1 1 in outer');
   editor.dispatch('create rect c 0 0 1 1 in outer');
-  assert.equal(editor.dispatch('group pair a b'), 'g#pair created with 2 children');
+  assert.equal(editor.dispatch('group pair b a'), 'g#pair created with 2 children');
   assert.match(editor.dispatch('tree'), /g#pair[\s\S]*rect#a[\s\S]*rect#b[\s\S]*rect#c/);
   assert.equal(editor.dispatch('ungroup pair'), 'g#pair ungrouped');
   assert.doesNotMatch(editor.dispatch('tree'), /g#pair/);
@@ -77,5 +77,14 @@ test('SVG round trip assigns missing ids and IO resets history', () => {
     writeFileSync(input, '<svg><rect></svg>');
     assert.equal(editor.dispatch(`read ${input}`), `error: cannot read file: ${input}`);
     assert.equal(editor.dispatch('tree'), before);
+    writeFileSync(input, '<svg><rect width="1" height="1"/><rect id="rect1" width="2" height="2"/></svg>');
+    assert.match(editor.dispatch(`read ${input}`), /warning: assigned id rect2 to unnamed <rect>/);
+    assert.match(editor.dispatch('tree'), /rect#rect2[\s\S]*rect#rect1/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('box is intentionally outside the Phase 1 shape registry', () => {
+  const editor = new Editor();
+  editor.dispatch('init');
+  assert.equal(editor.dispatch('create box n1 0 0 10 10 "title"'), 'error: unknown shape type: box (is the plugin loaded?)');
 });

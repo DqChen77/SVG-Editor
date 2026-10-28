@@ -2,7 +2,7 @@ import type { Element } from '@xmldom/xmldom';
 import { Shape } from './Shape.js';
 
 export class Line extends Shape {
-  constructor(id: string, private x1: number, private y1: number, private x2: number, private y2: number) { super(id, 'line'); }
+  constructor(id: string, private x1: number, private y1: number, private x2: number, private y2: number) { super(id, 'line'); if (![x1, y1, x2, y2].every(Number.isFinite)) throw new Error('invalid line geometry'); }
   clone(): Line { const copy = new Line(this.id, this.x1, this.y1, this.x2, this.y2); this.copyStyles(copy); return copy; }
   move(dx: number, dy: number): void { this.x1 += dx; this.y1 += dy; this.x2 += dx; this.y2 += dy; }
   scale(factor: number): void { this.x1 *= factor; this.y1 *= factor; this.x2 *= factor; this.y2 *= factor; }

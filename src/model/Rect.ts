@@ -4,7 +4,7 @@ import { Shape } from './Shape.js';
 export class Rect extends Shape {
   constructor(id: string, private x: number, private y: number, private width: number, private height: number) {
     super(id, 'rect');
-    if (width < 0 || height < 0) throw new Error('invalid rectangle size');
+    if (![x, y, width, height].every(Number.isFinite) || width < 0 || height < 0) throw new Error('invalid rectangle geometry');
   }
   clone(): Rect { const copy = new Rect(this.id, this.x, this.y, this.width, this.height); this.copyStyles(copy); return copy; }
   move(dx: number, dy: number): void { this.x += dx; this.y += dy; }

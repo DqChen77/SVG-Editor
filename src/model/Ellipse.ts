@@ -2,7 +2,7 @@ import type { Element } from '@xmldom/xmldom';
 import { Shape } from './Shape.js';
 
 export class Ellipse extends Shape {
-  constructor(id: string, private cx: number, private cy: number, private rx: number, private ry: number) { super(id, 'ellipse'); if (rx < 0 || ry < 0) throw new Error('invalid ellipse radius'); }
+  constructor(id: string, private cx: number, private cy: number, private rx: number, private ry: number) { super(id, 'ellipse'); if (![cx, cy, rx, ry].every(Number.isFinite) || rx < 0 || ry < 0) throw new Error('invalid ellipse radius'); }
   clone(): Ellipse { const copy = new Ellipse(this.id, this.cx, this.cy, this.rx, this.ry); this.copyStyles(copy); return copy; }
   move(dx: number, dy: number): void { this.cx += dx; this.cy += dy; }
   scale(factor: number): void { this.cx *= factor; this.cy *= factor; this.rx *= factor; this.ry *= factor; }

@@ -17,13 +17,19 @@ export class SvgParser {
     const document = new SvgDocument(width, height);
     const warnings: string[] = [];
     const counters = new Map<string, number>();
+    const reservedIds = new Set<string>();
+    for (let i = 0; i < root.getElementsByTagName('*').length; i += 1) {
+      const element = root.getElementsByTagName('*').item(i);
+      const id = element?.getAttribute('id');
+      if (id) reservedIds.add(id);
+    }
     const factory = new ShapeFactory();
     const nextId = (tag: string, element: Element): string => {
       const explicit = element.getAttribute('id');
       if (explicit) return explicit;
       let index = (counters.get(tag) ?? 0) + 1;
       let id = `${tag}${index}`;
-      while (document.has(id)) id = `${tag}${++index}`;
+      while (document.has(id) || reservedIds.has(id)) id = `${tag}${++index}`;
       counters.set(tag, index);
       return id;
     };
