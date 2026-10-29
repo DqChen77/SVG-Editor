@@ -1,5 +1,7 @@
 # SVG 编辑器 CLI：Phase 1
 
+github地址：https://github.com/DqChen77/SVG-Editor
+
 ## 架构方案
 
 ### 模块划分
